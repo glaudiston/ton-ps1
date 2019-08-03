@@ -7,6 +7,9 @@
 # Ref: https://misc.flogisoft.com/bash/tip_colors_and_formatting
 #
 
+# BUG: when prompt use more than 1 line, the backspace/retype genereates buggy rendering
+# BUG: when try to use "$_" to get the last argument, it returns timer_start
+
 yellow="$bold$(tput setaf 3)"
 red="$bold$(tput setaf 1)"
 green=$(tput setaf 2)
@@ -94,9 +97,20 @@ getCPos () {
     CPos=(${v[@]:1})
 }
 
+EOL(){
+	if [ "$TERM" != "screen" ]; then
+		tput sc;
+		tput cup $currow $(( $(tput cols) -3 ));
+		tput cub 2;
+		tput cuu1;
+		echo -n "$PS_LOGO";
+		tput rc;
+		echo -ne "$rcurrow";
+	fi;
+}
+
 set_prompt () {
     Last_Command=$? # Must come first!
-    EOL=""
     # in xterm avoid cursor misposition in last 3 lines
     if [ "$TERM" != "screen" ]; then
 	    getCPos;
@@ -105,17 +119,16 @@ set_prompt () {
 	    if [ "$currow" -ge "$(( $(tput lines) -1 ))" ]; then
 		rcurrow="$UP1L";
 	    fi;
-            EOL="$(tput sc; tput cup $currow $(( $(tput cols) -3 )); tput cub 2; tput cuu1; echo -n "$PS_LOGO"; tput rc; echo -ne "$rcurrow")"
     fi;
 
     # Add a bright white exit status for the last command
-    nPS1="$(printf "\e[48;5;233m% $(tput cols)s\r" " ")$Gray\t "
+    nPS1="\e[48;5;233m$(printf "% $(tput cols)s\r" " ")$Gray\t "
     # If it was successful, print a green check mark. Otherwise, print
     # a red X.
     if [[ $Last_Command == 0 ]]; then
         nPS1+="$Green$Checkmark "
     else
-        nPS1+="${Blink}$Red$FancyX=$Last_Command${ResetBlink} "
+        nPS1+="$Red$FancyX=$Last_Command "
     fi
 
     # Add the ellapsed time and current date
@@ -126,10 +139,12 @@ set_prompt () {
     # and host in green.
     if [[ $EUID == 0 ]]; then
         nPS1+="$Red\\u$Green@\\h"
-	L="♚ # $red"
+	L="♚$red"
+	P="\n# "
     else
         nPS1+="$Blue\\u$Gray@$Green\\h"
-	L="♙ $ $White${ResetDim}"
+	L="♙$White${ResetDim}"
+	P="\n$ "
     fi
     # Print the working directory and prompt marker in blue, and reset
     # the text color to the default.
@@ -137,8 +152,7 @@ set_prompt () {
 
 	# PS1 is similar to html tags but with color the tag starts like:
 	# \[\e[0;32m] bla bla \[\e[0m\] 0;32 is color green, space is \[$(tput sgr0)\], \W current dir
-	PS1="\[$BG_Gray$nPS1$Green "
-	PS1+="$Turkey$BG_Gray\$(check_status;check_branch)$BG_Gray$BG_Gray\]\[\$EOL\]\[$L\]"
+	PS1="\[$BG_Gray$nPS1$Green $Turkey$BG_Gray$(check_status;check_branch)$BG_Gray$BG_Gray$L$(EOL)\]$P"
 }
 
 trap 'timer_start' DEBUG
