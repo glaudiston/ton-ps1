@@ -152,7 +152,7 @@ set_prompt () {
 
 	# PS1 is similar to html tags but with color the tag starts like:
 	# \[\e[0;32m] bla bla \[\e[0m\] 0;32 is color green, space is \[$(tput sgr0)\], \W current dir
-	PS1="\[$BG_Gray$nPS1$Green $Turkey$BG_Gray$(check_status;check_branch)$BG_Gray$BG_Gray$L$(EOL)\]$P"
+	PS1="\[$BG_Gray$nPS1$Green $Turkey$BG_Gray$(check_status;check_branch)$BG_Gray$BG_Gray$L\$(EOL)\]$P"
 }
 
 trap 'timer_start' DEBUG
