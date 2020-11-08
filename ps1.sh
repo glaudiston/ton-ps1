@@ -56,8 +56,8 @@ function timer_now {
 }
 
 function timer_start {
-    echo -en "\e[00m"
-    timer_start=${timer_start:-$(timer_now)}
+	echo -en "\e[00m"
+	timer_start=${timer_start:-$(timer_now)}
 }
 
 function timer_stop {
@@ -155,7 +155,8 @@ set_prompt () {
 	PS1="\[$BG_Gray$nPS1$Green $Turkey$BG_Gray$(check_status;check_branch)$BG_Gray$BG_Gray$L\$(EOL)\]$P"
 }
 
-trap 'timer_start' DEBUG
+# timer_start replaces the $_ variable, so echo is a hack to bypass this issue
+trap '__="${_}";timer_start;echo "${__}" >/dev/null' DEBUG
 PROMPT_COMMAND='set_prompt'
 
 # hack to avoid color bug on xterm
@@ -163,4 +164,3 @@ read -a REPLY -s -t 0.25 -d "S" -p $'\e[?1;3;256S' >&2;
 
 export CLICOLOR=1
 export LSCOLORS=fxfxBxDxgxegedabagacad
-
