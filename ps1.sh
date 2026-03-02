@@ -10,6 +10,31 @@
 # BUG: when prompt use more than 1 line, the backspace/retype genereates buggy rendering
 # BUG: when try to use "$_" to get the last argument, it returns timer_start
 
+# bash powerline
+# 00000000: 5c5b 1b5b 303b 3338 3b35 3b32 3331 3b34  \[.[0;38;5;231;4
+# 00000010: 383b 353b 3331 3b31 6d5c 5dc2 a067 6c61  8;5;31;1m\]..gla
+# 00000020: 7564 6973 746f 6ec2 a05c 5b1b 5b30 3b33  udiston..\[.[0;3
+# 00000030: 383b 353b 3331 3b34 383b 353b 3234 303b  8;5;31;48;5;240;
+# 00000040: 3232 6d5c 5dee 82b0 c2a0 5c5b 1b5b 303b  22m\].....\[.[0;
+# 00000050: 3338 3b35 3b32 3530 3b34 383b 353b 3234  38;5;250;48;5;24
+# 00000060: 306d 5c5d 7ec2 a05c 5b1b 5b30 3b33 383b  0m\]~..\[.[0;38;
+# 00000070: 353b 3234 353b 3438 3b35 3b32 3430 3b32  5;245;48;5;240;2
+# 00000080: 326d 5c5d ee82 b1c2 a05c 5b1b 5b30 3b33  2m\].....\[.[0;3
+# 00000090: 383b 353b 3235 303b 3438 3b35 3b32 3430  8;5;250;48;5;240
+# 000000a0: 6d5c 5d73 7263 c2a0 5c5b 1b5b 303b 3338  m\]src..\[.[0;38
+# 000000b0: 3b35 3b32 3435 3b34 383b 353b 3234 303b  ;5;245;48;5;240;
+# 000000c0: 3232 6d5c 5dee 82b1 c2a0 5c5b 1b5b 303b  22m\].....\[.[0;
+# 000000d0: 3338 3b35 3b32 3532 3b34 383b 353b 3234  38;5;252;48;5;24
+# 000000e0: 303b 316d 5c5d 746f 6e2d 7073 31c2 a05c  0;1m\]ton-ps1..\
+# 000000f0: 5b1b 5b30 3b33 383b 353b 3234 303b 3439  [.[0;38;5;240;49
+# 00000100: 3b32 326d 5c5d ee82 b0c2 a05c 5b1b 5b30  ;22m\].....\[.[0
+# 00000110: 6d5c 5d5c 5b1b 5b73 1b5b 3238 3443 1b5b  m\]\[.[s.[284C.[
+# 00000120: 3131 441b 5b30 3b33 383b 353b 3233 363b  11D.[0;38;5;236;
+# 00000130: 3439 3b32 326d c2a0 ee82 b21b 5b30 3b33  49;22m......[0;3
+# 00000140: 383b 353b 3235 303b 3438 3b35 3b32 3336  8;5;250;48;5;236
+# 00000150: 6dc2 a0ee 82a0 c2a0 6d61 7374 6572 c2a0  m.......master..
+# 00000160: 1b5b 306d 1b5b 755c 5d0a                 .[0m.[u\].
+
 yellow="$bold$(tput setaf 3)"
 red="$bold$(tput setaf 1)"
 green=$(tput setaf 2)
@@ -109,16 +134,16 @@ EOL(){
 	fi;
 }
 
-set_prompt () {
+set_prompt() {
     Last_Command=$? # Must come first!
     # in xterm avoid cursor misposition in last 3 lines
     if [ "$TERM" != "screen" ]; then
 	    getCPos;
 	    currow="${CPos[0]}";
 	    rcurrow=""
-	    if [ "$currow" -ge "$(( $(tput lines) -1 ))" ]; then
-		rcurrow="$UP1L";
-	    fi;
+	#    if [ "$currow" -ge "$(( $(tput lines) -1 ))" ]; then
+	#	rcurrow="$UP1L";
+	#    fi;
     fi;
 
     # Add a bright white exit status for the last command
